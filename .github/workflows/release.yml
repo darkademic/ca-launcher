@@ -29,8 +29,9 @@ jobs:
 
     - name: Create release archive
       run: |
-        cd publish/win-x64
-        7z a -tzip ../../CALauncher-${{ github.ref_name }}-win-x64.zip *
+        mkdir CALauncher
+        xcopy publish\win-x64\* CALauncher\ /E /H /C /I
+        7z a -tzip CALauncher-${{ github.ref_name }}-win-x64.zip CALauncher\
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
@@ -39,5 +40,7 @@ jobs:
         draft: false
         prerelease: false
         generate_release_notes: true
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
