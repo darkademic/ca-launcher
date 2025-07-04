@@ -1,0 +1,321 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CALauncher.ViewModels"
+        xmlns:converters="using:CALauncher.Converters"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="410"
+        x:Class="CALauncher.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Combined Arms Launcher"
+        Width="600" Height="410"
+        MinWidth="600" MinHeight="410"
+        WindowStartupLocation="CenterScreen"
+        Background="#111"
+        Icon="avares://CALauncher/Assets/icon.ico">
+
+    <Window.Resources>
+        <converters:BooleanToCheckMarkConverter x:Key="BooleanToCheckMarkConverter"/>
+        <converters:BooleanToFontWeightConverter x:Key="BooleanToFontWeightConverter"/>
+        <converters:StatusTypeToColorConverter x:Key="StatusTypeToColorConverter"/>
+    </Window.Resources>
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <Image Grid.Row="0"
+               Source="avares://CALauncher/Assets/logo.png"
+               Width="550"
+               Height="143"
+               HorizontalAlignment="Center"
+               Margin="0,20,0,40"
+               Stretch="Uniform"/>
+
+        <!-- Version Selection and Controls -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
+            <TextBlock Text="Version:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="#CCC"/>
+
+            <!-- ComboBox when versions are available -->
+            <ComboBox ItemsSource="{Binding InstalledReleases}"
+                      SelectedItem="{Binding SelectedRelease}"
+                      IsVisible="{Binding HasInstalledReleases}"
+                      Width="280"
+                      Height="35"
+                      Margin="0,0,10,0"
+                      Foreground="#EEE"
+                      Background="#111"
+                      BorderBrush="#333"
+                      BorderThickness="1"
+                      Cursor="Hand">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding DisplayName}"
+                                   FontWeight="{Binding IsStable, Converter={StaticResource BooleanToFontWeightConverter}}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <ComboBox.Styles>
+                    <!-- Style the main ComboBox on hover -->
+                    <Style Selector="ComboBox:pointerover /template/ Border">
+                        <Setter Property="Background" Value="#444"/>
+                        <Setter Property="BorderBrush" Value="#555"/>
+                    </Style>
+                    <!-- Style for the selected item display (main combobox) -->
+                    <Style Selector="ComboBox /template/ ContentPresenter">
+                        <Setter Property="Foreground" Value="#EEE"/>
+                    </Style>
+                    <!-- Style for dropdown items -->
+                    <Style Selector="ComboBox ComboBoxItem">
+                        <Setter Property="Foreground" Value="#333"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                    </Style>
+                    <Style Selector="ComboBox ComboBoxItem:pointerover">
+                        <Setter Property="Background" Value="#E0E0E0"/>
+                        <Setter Property="Foreground" Value="#000"/>
+                    </Style>
+                    <Style Selector="ComboBox ComboBoxItem:selected">
+                        <Setter Property="Background" Value="#D0D0D0"/>
+                        <Setter Property="Foreground" Value="#000"/>
+                    </Style>
+                </ComboBox.Styles>
+            </ComboBox>
+
+            <!-- Placeholder box when no versions are available -->
+            <Border IsVisible="{Binding !HasInstalledReleases}"
+                    Width="280"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Background="#111"
+                    BorderBrush="#333"
+                    BorderThickness="1"
+                    CornerRadius="3">
+                <TextBlock Text="None"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
+                           Margin="8,0,0,0"
+                           Foreground="#666"
+                           FontSize="14"/>
+            </Border>
+
+            <Button Content="Play"
+                    Command="{Binding PlayCommand}"
+                    Width="100"
+                    Height="35"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Margin="0,0,10,0"
+                    Cursor="Hand">
+                <Button.Styles>
+                    <Style Selector="Button:not(:disabled)">
+                        <Setter Property="Background" Value="Green"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button:not(:disabled):pointerover">
+                        <Setter Property="Background" Value="#32CD32"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <!-- Override template background on hover -->
+                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#32CD32"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button:pointerover /template/ Border">
+                        <Setter Property="Background" Value="#32CD32"/>
+                    </Style>
+                    <!-- Disabled button styling -->
+                    <Style Selector="Button:disabled">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                        <Setter Property="Foreground" Value="#888"/>
+                    </Style>
+                    <Style Selector="Button:disabled /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                        <Setter Property="Foreground" Value="#888"/>
+                    </Style>
+                    <Style Selector="Button:disabled /template/ Border">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+
+            <!-- Kebab Menu Button -->
+            <Button Width="35"
+                    Height="35"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Name="KebabMenuButton"
+                    Cursor="Hand"
+                    Margin="5,0,0,0">
+                <Button.Flyout>
+                    <MenuFlyout>
+                        <MenuItem Header="Include Test Releases"
+                                  Command="{Binding ToggleIncludeTestReleasesCommand}">
+                            <MenuItem.Icon>
+                                <TextBlock Text="{Binding IncludeTestReleases, Converter={StaticResource BooleanToCheckMarkConverter}}" FontSize="14"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Delete Selected Release"
+                                  Command="{Binding DeleteSelectedReleaseCommand}"
+                                  IsEnabled="{Binding CanDeleteSelectedRelease}">
+                            <MenuItem.Icon>
+                                <TextBlock Text="🗑️" FontSize="14"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuFlyout>
+                </Button.Flyout>
+                <Button.Content>
+                    <TextBlock Text="⋮" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button.Content>
+                <Button.Styles>
+                    <Style Selector="Button#KebabMenuButton">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                        <Setter Property="Foreground" Value="#CCC"/>
+                        <Setter Property="CornerRadius" Value="17.5"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="BorderBrush" Value="#555"/>
+                    </Style>
+                    <Style Selector="Button#KebabMenuButton:pointerover">
+                        <Setter Property="Background" Value="#505050"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="BorderBrush" Value="#777"/>
+                    </Style>
+                    <Style Selector="Button#KebabMenuButton:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#505050"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button#KebabMenuButton:pointerover /template/ Border">
+                        <Setter Property="Background" Value="#505050"/>
+                        <Setter Property="BorderBrush" Value="#777"/>
+                    </Style>
+                    <Style Selector="Button#KebabMenuButton:disabled">
+                        <Setter Property="Background" Value="#2A2A2A"/>
+                        <Setter Property="Foreground" Value="#666"/>
+                        <Setter Property="BorderBrush" Value="#333"/>
+                    </Style>
+                    <Style Selector="Button#KebabMenuButton:disabled /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#2A2A2A"/>
+                        <Setter Property="Foreground" Value="#666"/>
+                    </Style>
+                    <Style Selector="Button#KebabMenuButton:disabled /template/ Border">
+                        <Setter Property="Background" Value="#2A2A2A"/>
+                        <Setter Property="BorderBrush" Value="#333"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+        </StackPanel>
+
+        <!-- Update Button Row -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
+            <Button Content="{Binding UpdateButtonText}"
+                    Command="{Binding UpdateCommand}"
+                    Width="150"
+                    Height="35"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Name="UpdateButton"
+                    Classes.update-now="{Binding IsUpdateNowButton}"
+                    Classes.cancel="{Binding IsCancelButton}"
+                    IsVisible="{Binding IsUpdateButtonVisible}"
+                    Cursor="Hand">
+                <Button.Styles>
+                    <Style Selector="Button#UpdateButton">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton:pointerover">
+                        <Setter Property="Background" Value="#505050"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <!-- Override template background on hover for default state -->
+                    <Style Selector="Button#UpdateButton:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#505050"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton:pointerover /template/ Border">
+                        <Setter Property="Background" Value="#505050"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton.update-now">
+                        <Setter Property="Background" Value="#FF0000"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton.update-now:pointerover">
+                        <Setter Property="Background" Value="#FF6666"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <!-- Override template background on hover for update-now state -->
+                    <Style Selector="Button#UpdateButton.update-now:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#FF6666"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton.update-now:pointerover /template/ Border">
+                        <Setter Property="Background" Value="#FF6666"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton.cancel">
+                        <Setter Property="Background" Value="#FF8C00"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton.cancel:pointerover">
+                        <Setter Property="Background" Value="#FFA500"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <!-- Override template background on hover for cancel state -->
+                    <Style Selector="Button#UpdateButton.cancel:pointerover /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#FFA500"/>
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton.cancel:pointerover /template/ Border">
+                        <Setter Property="Background" Value="#FFA500"/>
+                    </Style>
+                    <!-- Disabled button styling -->
+                    <Style Selector="Button#UpdateButton:disabled">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                        <Setter Property="Foreground" Value="#888"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton:disabled /template/ ContentPresenter">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                        <Setter Property="Foreground" Value="#888"/>
+                    </Style>
+                    <Style Selector="Button#UpdateButton:disabled /template/ Border">
+                        <Setter Property="Background" Value="#3A3A3A"/>
+                    </Style>
+                </Button.Styles>
+            </Button>
+        </StackPanel>
+
+        <!-- Progress Bar -->
+        <StackPanel Grid.Row="3" IsVisible="{Binding IsDownloading}">
+            <ProgressBar Value="{Binding DownloadProgress}"
+                         Height="15"
+                         Margin="0,0,0,0"
+                         Foreground="Red"
+                         Background="#222"/>
+        </StackPanel>
+
+        <!-- Status Text -->
+        <TextBlock Grid.Row="4"
+                   Text="{Binding StatusText}"
+                   HorizontalAlignment="Center"
+                   Margin="0,15,0,0"
+                   FontSize="13"
+                   Foreground="{Binding StatusType, Converter={StaticResource StatusTypeToColorConverter}}"/>
+
+        <!-- Footer -->
+        <TextBlock Grid.Row="5"
+                   Text="Combined Arms Launcher v1.0"
+                   HorizontalAlignment="Center"
+                   Margin="0,15,0,0"
+                   FontSize="11"
+                   Foreground="#555"/>
+    </Grid>
+</Window>

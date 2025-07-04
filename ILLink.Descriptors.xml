@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+  <assembly fullname="Avalonia.Base" preserve="all" />
+  <assembly fullname="Avalonia.Controls" preserve="all" />
+  <assembly fullname="Avalonia.Markup.Xaml" preserve="all" />
+  <assembly fullname="Avalonia.Styling" preserve="all" />
+  <assembly fullname="Avalonia.Themes.Fluent" preserve="all" />
+  <assembly fullname="Newtonsoft.Json" preserve="all" />
+  <type fullname="CALauncher.Models.*" preserve="all" />
+  <type fullname="CALauncher.ViewModels.*" preserve="all" />
+</linker>
